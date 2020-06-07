@@ -13,6 +13,7 @@ import os
 import sys
 from time import sleep
 from stat import ST_CTIME
+import uuid
 
 def usage():
     """Prints usage message to console
@@ -42,20 +43,25 @@ def main():
             os.path.isfile(f.path) and not f.name.startswith('.')]
         count = len(files)
         files.sort(key=os.path.getmtime)
-        os.mkdir(dir + "/" + "tmp_rename")
+
+        tmp_folder = dir +  "/{}".format(uuid.uuid4())
+        os.mkdir(tmp_folder)
 
         for i, oldname in enumerate(files):
             ext = os.path.splitext(oldname)[1]
-            newname = dir + "/tmp_rename/{} - {} of {}{}".format(foldername, i+1, count, ext)
+            newname = tmp_folder + "/{} - {} of {}{}".format(
+                foldername, i+1, count, ext)
             os.rename(oldname, newname)
         sleep(0.5)
 
         for i, oldname in enumerate(files):
             ext = os.path.splitext(oldname)[1]
-            oldname = dir + "/tmp_rename/{} - {} of {}{}".format(foldername, i+1, count, ext)
-            newname = dir + "/{} - {} of {}{}".format(foldername, i+1, count, ext)
+            oldname = tmp_folder + "/{} - {} of {}{}".format(
+                foldername, i+1, count, ext)
+            newname = dir + "/{} - {} of {}{}".format(
+                foldername, i+1, count, ext)
             os.rename(oldname, newname)
-        os.rmdir(dir + "/" + "tmp_rename")
+        os.rmdir(tmp_folder)
         print("DONE")
 
 if __name__ == "__main__":
